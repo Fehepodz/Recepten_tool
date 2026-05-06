@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promptmaker Recept</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --oranje: #D85A30;
+      --oranje-licht: #FAECE7;
+      --oranje-donker: #993C1D;
+      --bruin: #4A1B0C;
+      --tekst: #2C2C2A;
+      --tekst-licht: #5F5E5A;
+      --rand: rgba(0,0,0,0.1);
+      --achtergrond: #FDFAF7;
+      --wit: #ffffff;
+      --succes: #1D9E75;
+    }
+ 
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--achtergrond);
+      color: var(--tekst);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+ 
+    .pagina {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+ 
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+ 
+    header h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 2rem;
+      color: var(--oranje-donker);
+      margin-bottom: 0.4rem;
+    }
+ 
+    header p {
+      font-size: 15px;
+      color: var(--tekst-licht);
+      line-height: 1.6;
+    }
+ 
+    .kaart {
+      background: var(--wit);
+      border: 1px solid var(--rand);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+ 
+    .kaart-titel {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      color: var(--oranje-donker);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+ 
+    .kaart-titel span {
+      background: var(--oranje-licht);
+      color: var(--oranje-donker);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+ 
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--tekst-licht);
+      margin-bottom: 6px;
+    }
+ 
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--rand);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--tekst);
+      background: var(--achtergrond);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+ 
+    input[type="text"]:focus {
+      border-color: var(--oranje);
+      background: var(--wit);
+    }
+ 
+    input[type="text"]::placeholder {
+      color: #B4B2A9;
+    }
+ 
+    .rij {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+ 
+    .rij input { flex: 1; min-width: 0; }
+ 
+    .verwijder-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #B4B2A9;
+      font-size: 20px;
+      line-height: 1;
+      padding: 0 2px;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+ 
+    .verwijder-btn:hover { color: var(--oranje); }
+ 
+    .stap-nummer {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--tekst-licht);
+      margin-bottom: 4px;
+      margin-top: 2px;
+    }
+ 
+    .toevoeg-btn {
+      background: none;
+      border: 1px dashed var(--oranje);
+      color: var(--oranje);
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.15s;
+    }
+ 
+    .toevoeg-btn:hover { background: var(--oranje-licht); }
+ 
+    .genereer-btn {
+      width: 100%;
+      background: var(--oranje);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+ 
+    .genereer-btn:hover { background: var(--oranje-donker); }
+    .genereer-btn:active { transform: scale(0.98); }
+ 
+    .resultaat-blok {
+      display: none;
+      background: var(--wit);
+      border: 1px solid var(--rand);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-top: 1.25rem;
+    }
+ 
+    .resultaat-blok h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      color: var(--bruin);
+      margin-bottom: 1rem;
+    }
+ 
+    .prompt-tekst {
+      background: var(--achtergrond);
+      border: 1px solid var(--rand);
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-size: 13.5px;
+      line-height: 1.8;
+      color: var(--tekst);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+ 
+    .knop-rij {
+      display: flex;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+ 
+    .kopieer-btn {
+      background: var(--bruin);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+ 
+    .kopieer-btn:hover { opacity: 0.85; }
+ 
+    .succes-melding {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--succes);
+      font-weight: 500;
+    }
+ 
+    .ingredient-labels {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+ 
+    .ingredient-labels span {
+      flex: 1;
+      font-size: 12px;
+      color: var(--tekst-licht);
+      font-weight: 500;
+    }
+ 
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 12px;
+      color: var(--tekst-licht);
+    }
+  </style>
+</head>
+<body>
+  <div class="pagina">
+    <header>
+      <h1>Promptmaker Recept</h1>
+      <p>Vul de naam, ingrediënten en stappen in.<br>Kopieer de prompt en plak hem in Claude of ChatGPT.</p>
+    </header>
+ 
+    <div class="kaart">
+      <p class="kaart-titel"><span>1</span> Naam van het recept</p>
+      <label for="receptnaam">Receptnaam</label>
+      <input type="text" id="receptnaam" placeholder="bijv. Amerikaanse Brownie">
+    </div>
+ 
+    <div class="kaart">
+      <p class="kaart-titel"><span>2</span> Ingrediënten</p>
+      <div class="ingredient-labels">
+        <span>Ingrediënt</span>
+        <span>Hoeveelheid</span>
+        <span style="width:28px; flex:none;"></span>
+      </div>
+      <div id="ingredienten-lijst"></div>
+      <button class="toevoeg-btn" onclick="voegIngredientToe()">+ Ingrediënt toevoegen</button>
+    </div>
+ 
+    <div class="kaart">
+      <p class="kaart-titel"><span>3</span> Stappen</p>
+      <div id="stappen-lijst"></div>
+      <button class="toevoeg-btn" onclick="voegStapToe()">+ Stap toevoegen</button>
+    </div>
+ 
+    <div class="kaart">
+      <p class="kaart-titel"><span>4</span> Belangrijk (optioneel)</p>
+      <label for="belangrijk">Veiligheidstip of extra informatie voor de leerlingen</label>
+      <input type="text" id="belangrijk" placeholder="bijv. De oven is heet! Vraag hulp als je iets niet zeker weet.">
+      <p style="font-size:12px; color:var(--tekst-licht); margin-top:8px;">Laat je dit leeg, dan komt er geen Belangrijk-blok in de prompt.</p>
+    </div>
+ 
+    <button class="genereer-btn" onclick="maakPrompt()">Maak prompt</button>
+ 
+    <div class="resultaat-blok" id="resultaat-blok">
+      <h2>Jouw prompt</h2>
+      <div class="prompt-tekst" id="prompt-tekst"></div>
+      <div class="knop-rij">
+        <button class="kopieer-btn" onclick="kopieer()">Kopieer prompt</button>
+        <span class="succes-melding" id="succes-melding">&#10003; Gekopieerd</span>
+      </div>
+    </div>
+ 
+    <footer>Gemaakt voor de kooklessen</footer>
+  </div>
+ 
+  <script>
+    let ingTeller = 0;
+    let stapTeller = 0;
+ 
+    function voegIngredientToe(naam, hoeveelheid) {
+      ingTeller++;
+      const id = 'ing-' + ingTeller;
+      const div = document.createElement('div');
+      div.className = 'rij';
+      div.id = id;
+      div.innerHTML = `
+        <input type="text" placeholder="bijv. bloem" value="${naam || ''}">
+        <input type="text" placeholder="bijv. 200 g" value="${hoeveelheid || ''}">
+        <button class="verwijder-btn" onclick="verwijder('${id}')" aria-label="Verwijder">×</button>
+      `;
+      document.getElementById('ingredienten-lijst').appendChild(div);
+    }
+ 
+    function voegStapToe(tekst) {
+      stapTeller++;
+      const id = 'stap-' + stapTeller;
+      const nr = stapTeller;
+      const div = document.createElement('div');
+      div.id = id;
+      div.style.marginBottom = '10px';
+      div.innerHTML = `
+        <p class="stap-nummer">Stap ${nr}</p>
+        <div class="rij" style="margin-bottom:0">
+          <input type="text" placeholder="bijv. Smelt de boter op laag vuur." value="${tekst || ''}" style="flex:1;min-width:0">
+          <button class="verwijder-btn" onclick="verwijder('${id}')" aria-label="Verwijder">×</button>
+        </div>
+      `;
+      document.getElementById('stappen-lijst').appendChild(div);
+    }
+ 
+    function verwijder(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+ 
+    function maakPrompt() {
+      const naam = document.getElementById('receptnaam').value.trim();
+      if (!naam) { alert('Vul eerst een naam in.'); return; }
+ 
+      const ingRijen = document.querySelectorAll('#ingredienten-lijst .rij');
+      const ingredienten = [];
+      ingRijen.forEach(rij => {
+        const inputs = rij.querySelectorAll('input');
+        const product = inputs[0].value.trim();
+        const hoeveelheid = inputs[1].value.trim();
+        if (product) ingredienten.push(hoeveelheid ? hoeveelheid + ' ' + product : product);
+      });
+ 
+      const stapRijen = document.querySelectorAll('[id^="stap-"]');
+      const stappen = [];
+      stapRijen.forEach(rij => {
+        const input = rij.querySelector('input');
+        if (input && input.value.trim()) stappen.push(input.value.trim());
+      });
+ 
+      if (ingredienten.length === 0) { alert('Voeg minimaal één ingrediënt toe.'); return; }
+      if (stappen.length === 0) { alert('Voeg minimaal één stap toe.'); return; }
+ 
+      const ingTekst = ingredienten.map((i, idx) => `${idx + 1}. ${i}`).join('\n');
+      const stapTekst = stappen.map((s, idx) => `${idx + 1}. ${s}`).join('\n');
+      const belangrijk = document.getElementById('belangrijk').value.trim();
+ 
+      const belangrijkBlok = belangrijk
+        ? `\n\nOnderaan staat een blok "Belangrijk!" met een waarschuwingsicoon en de volgende tekst: ${belangrijk}`
+        : '';
+ 
+      const belangrijkData = belangrijk
+        ? `\n\nBelangrijk:\n${belangrijk}`
+        : '';
+ 
+      const prompt = `Maak een visueel stappenplan voor leerlingen van 12 tot 16 jaar. Deze leerlingen werken op groep 6 niveau. Gebruik korte zinnen en eenvoudige woorden. Schrijf instructies in de gebiedende wijs, bijvoorbeeld "Snij de ui" en niet "Je moet de ui snijden".
+ 
+Het stappenplan heeft de volgende vaste opmaak:
+ 
+Bovenaan staat de naam van het recept in grote, duidelijke letters.
+ 
+Daaronder staat een illustratie of foto van het eindresultaat.
+ 
+Dan volgt een blok "Wat heb je nodig?" met een genummerde lijst van alle ingrediënten met hoeveelheden. Elk ingrediënt krijgt een klein illustratief icoontje of plaatje ernaast.
+ 
+Dan volgt een blok "Zo maak je het:" met de stappen. Elke stap heeft:
+- Een nummer in een gekleurde cirkel
+- Een duidelijke illustratie die laat zien wat je doet
+- Eén korte zin als uitleg onder de illustratie
+ 
+Gebruik warme, duidelijke kleuren zoals oranje en bruin voor titels. Zorg dat het er verzorgd en overzichtelijk uitziet, vergelijkbaar met een professioneel kookblad voor kinderen.${belangrijkBlok}
+ 
+---
+ 
+Naam van het recept: ${naam}
+ 
+Ingrediënten:
+${ingTekst}
+ 
+Stappen:
+${stapTekst}${belangrijkData}
+ 
+Maak geen fouten.`;
+ 
+      document.getElementById('prompt-tekst').textContent = prompt;
+      document.getElementById('resultaat-blok').style.display = 'block';
+      document.getElementById('resultaat-blok').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+ 
+    function kopieer() {
+      const tekst = document.getElementById('prompt-tekst').textContent;
+      navigator.clipboard.writeText(tekst).then(() => {
+        const melding = document.getElementById('succes-melding');
+        melding.style.display = 'flex';
+        setTimeout(() => melding.style.display = 'none', 2500);
+      });
+    }
+ 
+    voegIngredientToe('', '');
+    voegIngredientToe('', '');
+    voegIngredientToe('', '');
+    voegStapToe('');
+    voegStapToe('');
+    voegStapToe('');
+  </script>
+</body>
+</html>
+ 
